@@ -58,7 +58,7 @@
 
         currentUrl.searchParams.set('w', 1);
         location.href = currentUrl.href;
-    }
+    };
 
     // We need to have a poller because when opening a PR and navigating to the files tab does not reload the page
     var intervalID = setInterval(checkUrl, 50);
