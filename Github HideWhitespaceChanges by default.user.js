@@ -34,34 +34,30 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 
-(function() {
-    'use strict';
+function turnOnOption(){
+    const currentUrl = new URL(document.location.href);
 
-    const checkUrl = () => {
-        const currentUrl = new URL(document.location.href);
+    const reviewPage = /\/.*\/.*\/pull\/.*\/files.*/;
+    const isReviewing = reviewPage.test(currentUrl.pathname);
 
-        const reviewingFiles = /\/.*\/.*\/pull\/.*\/files.*/;
-        const isReviewingFiles = reviewingFiles.test(currentUrl.pathname);
+    if (!isReviewing) {    
+        // We need to have a poller because when opening the PR page
+        // and navigating to the files tab does not reload the page
+        setTimeout(turnOnOption, 50);
+        return;
+    }
 
-        if (!isReviewingFiles) {
-            return;
-        }
+    clearInterval(intervalID);
 
-        const currentWhitespaceSetting = currentUrl.searchParams.get('w');
+    const currentWhitespaceSetting = currentUrl.searchParams.get('w');
 
-        // Don't change setting if it is already defined
-        if (currentWhitespaceSetting !== null) {
-            return;
-        }
+    // Don't change setting if it is already defined
+    if (currentWhitespaceSetting !== null) {
+        return;
+    }
 
-        clearInterval(intervalID);
+    currentUrl.searchParams.set('w', 1);
+    location.href = currentUrl.href;
+};
 
-        currentUrl.searchParams.set('w', 1);
-        location.href = currentUrl.href;
-    };
-
-    // We need to have a poller because when opening a PR and navigating to the files tab does not reload the page
-    var intervalID = setInterval(checkUrl, 50);
-
-    checkUrl();
-})();
+turnOnOption();
