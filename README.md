@@ -1,5 +1,4 @@
-# GithubHideWhitespaceChangesByDefault
+Userscript to toggle HideWhispaceChanges option by default.
 
-Userscript to toggle HideWhispaceChanges option by default
 
-Add this to your Tampermonkey extension
+You just need to add this script in your Tampermonkey extension.
