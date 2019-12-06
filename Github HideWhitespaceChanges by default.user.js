@@ -47,8 +47,6 @@ function turnOnOption(){
         return;
     }
 
-    clearInterval(intervalID);
-
     const currentWhitespaceSetting = currentUrl.searchParams.get('w');
 
     // Don't change setting if it is already defined
