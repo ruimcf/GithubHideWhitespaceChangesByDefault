@@ -46,8 +46,9 @@
             return;
         }
 
-        currentUrl.searchParams.set('w', 1);
         clearInterval(intervalID);
+
+        currentUrl.searchParams.set('w', 1);
         location.href = currentUrl.href;
     }
 
