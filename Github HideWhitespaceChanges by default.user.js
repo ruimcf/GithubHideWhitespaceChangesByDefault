@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github HideWhitespaceChanges by default
 // @namespace    ruimcf
-// @version      0.1
+// @version      0.2
 // @description  Turn on Github's hide whitespace changes feature when reviewing files of a PR
 // @author       Rui Fonseca
 // @website      https://github.com/ruimcf
@@ -30,31 +30,51 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 
-function turnOnOption(){
-    const currentUrl = new URL(document.location.href);
 
+/* Modify history events to trigger our function */
+history.pushState = (originalFn => (...args) => {
+    const returnValue = originalFn.apply(this, ...args);
+    window.dispatchEvent(new Event('pushState'));
+    window.dispatchEvent(new Event('locationchange'));
+    return returnValue;
+})(history.pushState);
+
+history.replaceState = (originalFn => (...args) => {
+    const returnValue = originalFn.apply(this, ...args);
+    window.dispatchEvent(new Event('replaceState'));
+    window.dispatchEvent(new Event('locationchange'));
+    return returnValue;
+})(history.replaceState);
+
+window.addEventListener('popstate',()=>{
+    window.dispatchEvent(new Event('locationchange'))
+});
+
+const isInFileReviewPage = (currentUrl) => {
     const reviewPage = /\/.*\/.*\/pull\/.*\/files.*/;
-    const isReviewing = reviewPage.test(currentUrl.pathname);
 
-    if (!isReviewing) {
+    return reviewPage.test(currentUrl.pathname);
+}
+
+const turnOnHideWhiteSpaceChanges = () => {
+    console.log("running func");
+    const currentUrl = new URL(document.location.href);
+    const whiteSpaceSetting = 'w';
+
+    if(!isInFileReviewPage(currentUrl)){
         return;
     }
 
-    clearInterval(id);
+    const isSettingAlreadyConfigured = currentUrl.searchParams.get(whiteSpaceSetting) !== null
 
-    const currentWhitespaceSetting = currentUrl.searchParams.get('w');
-
-    // Don't change setting if it is already defined
-    if (currentWhitespaceSetting !== null) {
+    if (isSettingAlreadyConfigured) {
         return;
     }
 
-    currentUrl.searchParams.set('w', 1);
+    currentUrl.searchParams.set(whiteSpaceSetting, 1);
     location.href = currentUrl.href;
 };
 
-// We need to have a poller because when opening the PR page
-// and navigating to the files tab does not reload the page
-var id = setInterval(turnOnOption, 50);
+window.addEventListener('locationchange', turnOnHideWhiteSpaceChanges)
 
-turnOnOption();
+turnOnHideWhiteSpaceChanges();
