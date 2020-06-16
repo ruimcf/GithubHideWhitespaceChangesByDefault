@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Github HideWhitespaceChanges by default
 // @namespace    ruimcf
-// @version      0.2
+// @version      0.3
 // @description  Turn on Github's hide whitespace changes feature when reviewing files of a PR
 // @author       Rui Fonseca
 // @website      https://github.com/ruimcf
@@ -31,19 +31,19 @@
 **/
 
 
-/* Modify history events to trigger our function */
-history.pushState = (originalFn => (...args) => {
-    const returnValue = originalFn.apply(this, ...args);
+/* These are the modifications: */
+history.pushState = ( f => function pushState(){
+    var ret = f.apply(this, arguments);
     window.dispatchEvent(new Event('pushState'));
     window.dispatchEvent(new Event('locationchange'));
-    return returnValue;
+    return ret;
 })(history.pushState);
 
-history.replaceState = (originalFn => (...args) => {
-    const returnValue = originalFn.apply(this, ...args);
+history.replaceState = ( f => function replaceState(){
+    var ret = f.apply(this, arguments);
     window.dispatchEvent(new Event('replaceState'));
     window.dispatchEvent(new Event('locationchange'));
-    return returnValue;
+    return ret;
 })(history.replaceState);
 
 window.addEventListener('popstate',()=>{
