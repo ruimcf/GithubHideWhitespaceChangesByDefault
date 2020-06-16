@@ -30,20 +30,18 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 
-
-/* These are the modifications: */
 history.pushState = ( f => function pushState(){
-    var ret = f.apply(this, arguments);
+    const returnValue = f.apply(this, arguments);
     window.dispatchEvent(new Event('pushState'));
     window.dispatchEvent(new Event('locationchange'));
-    return ret;
+    return returnValue;
 })(history.pushState);
 
 history.replaceState = ( f => function replaceState(){
-    var ret = f.apply(this, arguments);
+    const returnValue = f.apply(this, arguments);
     window.dispatchEvent(new Event('replaceState'));
     window.dispatchEvent(new Event('locationchange'));
-    return ret;
+    return returnValue;
 })(history.replaceState);
 
 window.addEventListener('popstate',()=>{
