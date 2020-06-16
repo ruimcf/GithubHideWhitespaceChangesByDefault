@@ -30,15 +30,15 @@
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 **/
 
-history.pushState = ( f => function pushState(){
-    const returnValue = f.apply(this, arguments);
+history.pushState = (originalPushState => function pushState(){
+    const returnValue = originalPushState.apply(this, arguments);
     window.dispatchEvent(new Event('pushState'));
     window.dispatchEvent(new Event('locationchange'));
     return returnValue;
 })(history.pushState);
 
-history.replaceState = ( f => function replaceState(){
-    const returnValue = f.apply(this, arguments);
+history.replaceState = (originalReplaceState => function replaceState(){
+    const returnValue = originalReplaceState.apply(this, arguments);
     window.dispatchEvent(new Event('replaceState'));
     window.dispatchEvent(new Event('locationchange'));
     return returnValue;
